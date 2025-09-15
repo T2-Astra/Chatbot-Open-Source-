@@ -11,7 +11,7 @@
 
 **A next-generation AI chatbot platform with MongoDB persistence, built for developers, by developers.**
 
-[🚀 Live Demo](https://your-app.vercel.app) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/T2-Astra/Chatbot-Open-Source-/issues) • [✨ Request Feature](https://github.com/T2-Astra/Chatbot-Open-Source-/issues)
+• [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/T2-Astra/Chatbot-Open-Source-/issues) • [✨ Request Feature](https://github.com/T2-Astra/Chatbot-Open-Source-/issues)
 
 </div>
 
@@ -277,7 +277,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Made with ❤️ by the T2-Astra Team**
+**Made with ❤️ by the T2-Astra**
 
 [⭐ Star us on GitHub](https://github.com/T2-Astra/Chatbot-Open-Source-) • [🐦 Follow on Twitter](https://x.com/KrishMhatr14800) •
 
