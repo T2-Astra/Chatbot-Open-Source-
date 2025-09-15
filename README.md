@@ -211,10 +211,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 **Email**: support@t2-astra.com
-- 💬 **Discord**: [Join our community](https://discord.gg/your-server)
+- 📧 **Email**: krishmhatre34@gmail.com
 - 🐛 **Issues**: [GitHub Issues](https://github.com/T2-Astra/Chatbot-Open-Source-/issues)
-- 📖 **Docs**: [Full Documentation](https://docs.your-domain.com)
+
 
 ---
 
@@ -222,6 +221,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the T2-Astra Team**
 
-[⭐ Star us on GitHub](https://github.com/T2-Astra/Chatbot-Open-Source-) • [🐦 Follow on Twitter](https://twitter.com/t2astra) • [🌐 Visit our Website](https://t2-astra.com)
+[⭐ Star us on GitHub](https://github.com/T2-Astra/Chatbot-Open-Source-) • [🐦 Follow on Twitter](https://x.com/KrishMhatr14800) •
 
 </div>
