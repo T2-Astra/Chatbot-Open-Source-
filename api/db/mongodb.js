@@ -9,7 +9,14 @@ export async function connectToDatabase() {
   }
 
   try {
-    client = new MongoClient(process.env.MONGODB_URI, {
+    const mongoUri = process.env.MONGODB_URI || process.env.VITE_MONGODB_URI;
+    console.log('Connecting to MongoDB with URI:', mongoUri ? 'URI provided' : 'No URI found');
+    
+    if (!mongoUri) {
+      throw new Error('MongoDB URI not found in environment variables');
+    }
+
+    client = new MongoClient(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -17,7 +24,7 @@ export async function connectToDatabase() {
     await client.connect();
     db = client.db('chatbot');
     
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB successfully');
     return { client, db };
   } catch (error) {
     console.error('Failed to connect to MongoDB:', error);
