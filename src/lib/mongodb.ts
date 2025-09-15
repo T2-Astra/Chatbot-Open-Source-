@@ -45,7 +45,7 @@ class MongoDBClient {
       return this.addLocalMessage(chatId, message);
     }
 
-    await this.request(`/chats/${chatId}/messages`, {
+    await this.request(`/messages/${chatId}`, {
       method: 'POST',
       body: JSON.stringify({ ...message, userId }),
     });
@@ -68,7 +68,7 @@ class MongoDBClient {
     }
 
     try {
-      const response = await this.request(`/chats/${chatId}?userId=${userId}`);
+      const response = await this.request(`/chat/${chatId}?userId=${userId}`);
       return response.chat;
     } catch (error) {
       return null;
@@ -81,7 +81,7 @@ class MongoDBClient {
       return this.updateLocalChatTitle(chatId, title);
     }
 
-    await this.request(`/chats/${chatId}`, {
+    await this.request(`/chat/${chatId}`, {
       method: 'PATCH',
       body: JSON.stringify({ title, userId }),
     });
@@ -93,7 +93,7 @@ class MongoDBClient {
       return this.deleteLocalChat(chatId);
     }
 
-    await this.request(`/chats/${chatId}`, {
+    await this.request(`/chat/${chatId}`, {
       method: 'DELETE',
       body: JSON.stringify({ userId }),
     });
