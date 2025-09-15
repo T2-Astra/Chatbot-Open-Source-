@@ -1,22 +1,117 @@
 import { Chat, Message } from '../types/chat';
 
-class MockMongoDB {
+// MongoDB API client for frontend
+class MongoDBClient {
+  private baseUrl: string;
+
+  constructor() {
+    // In production, this would be your API endpoint
+    this.baseUrl = import.meta.env.VITE_API_URL || '/api';
+  }
+
+  private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async createChat(title: string, userId?: string): Promise<string> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.createLocalChat(title);
+    }
+
+    const response = await this.request('/chats', {
+      method: 'POST',
+      body: JSON.stringify({ title, userId }),
+    });
+    return response.chatId;
+  }
+
+  async addMessage(chatId: string, message: Omit<Message, '_id' | 'chatId'>, userId?: string): Promise<void> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.addLocalMessage(chatId, message);
+    }
+
+    await this.request(`/chats/${chatId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ ...message, userId }),
+    });
+  }
+
+  async getChats(userId?: string): Promise<Chat[]> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.getLocalChats();
+    }
+
+    const response = await this.request(`/chats?userId=${userId}`);
+    return response.chats;
+  }
+
+  async getChat(chatId: string, userId?: string): Promise<Chat | null> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.getLocalChat(chatId);
+    }
+
+    try {
+      const response = await this.request(`/chats/${chatId}?userId=${userId}`);
+      return response.chat;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async updateChatTitle(chatId: string, title: string, userId?: string): Promise<void> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.updateLocalChatTitle(chatId, title);
+    }
+
+    await this.request(`/chats/${chatId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ title, userId }),
+    });
+  }
+
+  async deleteChat(chatId: string, userId?: string): Promise<void> {
+    if (!userId) {
+      // For guests, use localStorage fallback
+      return this.deleteLocalChat(chatId);
+    }
+
+    await this.request(`/chats/${chatId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ userId }),
+    });
+  }
+
+  // LocalStorage fallback methods for guests
   private getStorageKey(userId?: string): string {
     return userId ? `chatbot_data_${userId}` : 'chatbot_data_guest';
   }
 
-  private getData(userId?: string): { chats: Chat[] } {
-    // Only return data for authenticated users, empty for guests
+  private getLocalData(userId?: string): { chats: Chat[] } {
     if (!userId) return { chats: [] };
-    
     const data = localStorage.getItem(this.getStorageKey(userId));
     return data ? JSON.parse(data) : { chats: [] };
   }
 
-  private saveData(data: { chats: Chat[] }, userId?: string): void {
-    // Only save data for authenticated users
+  private saveLocalData(data: { chats: Chat[] }, userId?: string): void {
     if (!userId) return;
-    
     localStorage.setItem(this.getStorageKey(userId), JSON.stringify(data));
   }
 
@@ -24,24 +119,9 @@ class MockMongoDB {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }
 
-  async connect(): Promise<void> {
-    // Mock connection - no actual connection needed for localStorage
-    return Promise.resolve();
-  }
-
-  async disconnect(): Promise<void> {
-    // Mock disconnection - no actual disconnection needed for localStorage
-    return Promise.resolve();
-  }
-
-  async createChat(title: string, userId?: string): Promise<string> {
-    // For guests, just return a temporary ID without saving
-    if (!userId) {
-      return this.generateId();
-    }
-    
-    const data = this.getData(userId);
+  private async createLocalChat(title: string): Promise<string> {
     const chatId = this.generateId();
+    const data = this.getLocalData('guest');
     
     const chat: Chat = {
       _id: chatId,
@@ -51,16 +131,13 @@ class MockMongoDB {
       messages: []
     };
     
-    data.chats.unshift(chat); // Add to beginning for most recent first
-    this.saveData(data, userId);
+    data.chats.unshift(chat);
+    this.saveLocalData(data, 'guest');
     return chatId;
   }
 
-  async addMessage(chatId: string, message: Omit<Message, '_id' | 'chatId'>, userId?: string): Promise<void> {
-    // For guests, don't save messages
-    if (!userId) return;
-    
-    const data = this.getData(userId);
+  private async addLocalMessage(chatId: string, message: Omit<Message, '_id' | 'chatId'>): Promise<void> {
+    const data = this.getLocalData('guest');
     const chat = data.chats.find(c => c._id === chatId);
     
     if (chat) {
@@ -72,41 +149,38 @@ class MockMongoDB {
       
       chat.messages.push(messageWithId);
       chat.updatedAt = new Date();
-      this.saveData(data, userId);
+      this.saveLocalData(data, 'guest');
     }
   }
 
-  async getChats(userId?: string): Promise<Chat[]> {
-    const data = this.getData(userId);
+  private async getLocalChats(): Promise<Chat[]> {
+    const data = this.getLocalData('guest');
     return data.chats.sort((a, b) => 
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   }
 
-  async getChat(chatId: string, userId?: string): Promise<Chat | null> {
-    const data = this.getData(userId);
+  private async getLocalChat(chatId: string): Promise<Chat | null> {
+    const data = this.getLocalData('guest');
     return data.chats.find(c => c._id === chatId) || null;
   }
 
-  async updateChatTitle(chatId: string, title: string, userId?: string): Promise<void> {
-    // For guests, don't save title updates
-    if (!userId) return;
-    
-    const data = this.getData(userId);
+  private async updateLocalChatTitle(chatId: string, title: string): Promise<void> {
+    const data = this.getLocalData('guest');
     const chat = data.chats.find(c => c._id === chatId);
     
     if (chat) {
       chat.title = title;
       chat.updatedAt = new Date();
-      this.saveData(data, userId);
+      this.saveLocalData(data, 'guest');
     }
   }
 
-  async deleteChat(chatId: string, userId?: string): Promise<void> {
-    const data = this.getData(userId);
+  private async deleteLocalChat(chatId: string): Promise<void> {
+    const data = this.getLocalData('guest');
     data.chats = data.chats.filter(c => c._id !== chatId);
-    this.saveData(data, userId);
+    this.saveLocalData(data, 'guest');
   }
 }
 
-export const mongodb = new MockMongoDB();
+export const mongodb = new MongoDBClient();

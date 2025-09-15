@@ -7,8 +7,9 @@
 ![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript)
 ![Vite](https://img.shields.io/badge/Vite-5.4.2-646CFF?style=for-the-badge&logo=vite)
+![MongoDB](https://img.shields.io/badge/MongoDB-6.19.0-47A248?style=for-the-badge&logo=mongodb)
 
-**A next-generation AI chatbot platform built for developers, by developers.**
+**A next-generation AI chatbot platform with MongoDB persistence, built for developers, by developers.**
 
 [🚀 Live Demo](https://your-app.vercel.app) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/T2-Astra/Chatbot-Open-Source-/issues) • [✨ Request Feature](https://github.com/T2-Astra/Chatbot-Open-Source-/issues)
 
@@ -32,9 +33,14 @@ Chatbot Open Source is a modern, privacy-first AI chatbot platform that combines
 - **Context-Aware Conversations**: Maintains conversation history and context
 - **Real-time Responses**: Streaming responses for better UX
 
+### 🗄️ **MongoDB Integration**
+- **Persistent Storage**: Chat history stored in MongoDB Atlas
+- **Scalable Architecture**: Handles millions of conversations
+- **Real-time Sync**: Instant synchronization across devices
+
 ### 🔒 **Privacy by Design**
 - **User Data Isolation**: Complete separation of user conversations
-- **Local Storage**: Client-side data management with user-specific encryption
+- **Hybrid Storage**: MongoDB for authenticated users, localStorage for guests
 - **GDPR Compliant**: Built with privacy regulations in mind
 
 ### 📱 **Modern User Experience**
@@ -49,6 +55,7 @@ Chatbot Open Source is a modern, privacy-first AI chatbot platform that combines
 - Node.js 18+ and npm
 - A Clerk account for authentication
 - Google AI API key for Gemini integration
+- MongoDB Atlas account (or local MongoDB instance)
 
 ### Installation
 
@@ -75,17 +82,25 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 # Google AI
 VITE_GEMINI_API_KEY=your_gemini_api_key
 
-# Optional: Database (MongoDB/Supabase)
-VITE_MONGODB_URI=your_mongodb_connection_string
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# MongoDB Database
+VITE_MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chatbot
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chatbot
+
+# API Configuration
+VITE_API_URL=http://localhost:3001/api
 ```
 
 ### Development
 
 ```bash
-# Start development server
+# Start frontend only
 npm run dev
+
+# Start API server only
+npm run api:dev
+
+# Start both frontend and API (recommended)
+npm run dev:full
 
 # Build for production
 npm run build
@@ -99,6 +114,18 @@ npm run lint
 
 Visit `http://localhost:5173` to see your chatbot in action! 🎉
 
+### MongoDB Setup
+
+1. **Create MongoDB Atlas Account**: Sign up at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. **Create a Cluster**: Follow the setup wizard to create a free cluster
+3. **Get Connection String**: Copy your connection string from the Atlas dashboard
+4. **Update Environment Variables**: Add your MongoDB URI to `.env`
+
+```bash
+# Example MongoDB Atlas connection string
+MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/chatbot?retryWrites=true&w=majority
+```
+
 ## 🏗️ Architecture
 
 ```mermaid
@@ -108,8 +135,12 @@ graph TB
     B --> D[Gemini AI Service]
     C --> E[User Management]
     D --> F[Conversation Engine]
-    E --> G[Local Storage]
+    E --> G[MongoDB Atlas]
     F --> G
+    E --> H[LocalStorage Fallback]
+    F --> H
+    G --> I[REST API]
+    H --> I
 ```
 
 ### Tech Stack
@@ -122,6 +153,8 @@ graph TB
 | **Styling** | Tailwind CSS | 3.4.1 |
 | **Authentication** | Clerk | 5.47.0 |
 | **AI Engine** | Google Gemini | 0.24.1 |
+| **Database** | MongoDB | 6.19.0 |
+| **Backend** | Node.js + Express | 18+ |
 | **Icons** | Lucide React | 0.344.0 |
 
 ## 📖 Documentation
@@ -163,11 +196,36 @@ npm i -g vercel
 vercel --prod
 ```
 
+### Docker Deployment
+
+```bash
+# Build and run with Docker Compose
+docker-compose up -d
+
+# Or build individual containers
+docker build -t chatbot-app .
+docker run -p 3001:3001 chatbot-app
+```
+
 ### Other Platforms
 
-- **Netlify**: `npm run build` and deploy `dist` folder
-- **AWS S3 + CloudFront**: Static hosting with CDN
-- **Docker**: `docker build -t chatbot-app .`
+- **Railway**: Connect your GitHub repo for automatic deployments
+- **Render**: Deploy both frontend and backend with ease
+- **AWS**: Use ECS or Elastic Beanstalk for scalable deployment
+- **DigitalOcean**: App Platform for simple container deployment
+
+### Environment Variables for Production
+
+```env
+# Production MongoDB
+MONGODB_URI=mongodb+srv://prod-user:password@prod-cluster.mongodb.net/chatbot
+
+# Production API
+VITE_API_URL=https://your-api-domain.com/api
+
+# Clerk Production Keys
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_your_production_key
+```
 
 ## 🤝 Contributing
 
