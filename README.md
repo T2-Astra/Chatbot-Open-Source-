@@ -112,7 +112,7 @@ npm run preview
 npm run lint
 ```
 
-Visit `http://localhost:5173` to see your chatbot in action! 🎉
+Visit `http://localhost:5173` to see your chatbot in action! 
 
 ### MongoDB Setup
 
