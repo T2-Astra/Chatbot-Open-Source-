@@ -194,6 +194,7 @@ npm i -g vercel
 
 # Deploy to Vercel
 vercel --prod
+
 ```
 
 ### Docker Deployment
