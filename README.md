@@ -90,10 +90,10 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chatbot
 VITE_API_URL=http://localhost:3001/api
 ```
 
-### Development
+### Developmentt
 
 ```bash
-# Start frontend only
+# Start frontend onl
 npm run dev
 
 # Start API server only
