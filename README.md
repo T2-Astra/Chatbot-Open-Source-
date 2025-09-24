@@ -1,4 +1,4 @@
-# 🤖 Chatbot Open S
+# 🤖 Chatbot Open Sourc
 
 <div align="center">
 
