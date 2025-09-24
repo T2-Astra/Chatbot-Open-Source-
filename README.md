@@ -1,4 +1,4 @@
-# 🤖 Chatbot Open So
+# 🤖 Chatbot Open S
 
 <div align="center">
 
