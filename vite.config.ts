@@ -8,5 +8,4 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
 });
-ssss
-cc
+.
