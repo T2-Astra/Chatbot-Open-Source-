@@ -1,4 +1,4 @@
-# 🤖 Chatbot Open Source
+# 🤖 Chatbot Open Sourc
 
 <div align="center">
 
